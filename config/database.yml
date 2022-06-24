@@ -15,7 +15,7 @@ default: &default
   database: blogApplication
   host: localhost
   username: admin
-  password: 12345@aA
+  password: 1234@aA
   socket: /var/run/mysqld/mysqld.sock
 
 development:
