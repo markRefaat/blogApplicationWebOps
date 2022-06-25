@@ -24,7 +24,7 @@ class PostsController < ApplicationController
       @post.tags.build({name: tag})
     end
     if @post.save
-      DeletePostJob.perform_at(1.minutes.from_now, @post.id)
+      DeletePostJob.perform_at(1440.minutes.from_now, @post.id)
       render json: @post, status: :created, location: @post
     else
       render json: @post.errors, status: :unprocessable_entity
