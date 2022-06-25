@@ -13,9 +13,9 @@ default: &default
   adapter: mysql2
   encoding: utf8mb4
   database: blogApplication
-  host: localhost
-  username: admin
-  password: 1234@aA
+  host: db
+  username: root
+  password: root
   socket: /var/run/mysqld/mysqld.sock
 
 development:

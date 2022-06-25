@@ -1,0 +1,53 @@
+services:
+  db:
+    image: mysql
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USERNAME=root
+      - MYSQL_PASSWORD=root
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - db:/var/run/mysqld
+    ports:
+        - "3306:3306"
+  redis:
+    image: redis
+    volumes:
+      - 'redis:/data'
+  sidekiq:
+    build: .
+    command: bundle exec sidekiq
+    volumes:
+      - '.:/app'
+      - '/app/tmp' # don't mount tmp directory
+    links:
+      - db
+      - redis
+    working_dir: /app
+    environment:
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_POOL: 5
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_URL: redis
+  app:  
+    build: .
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
+    volumes:
+      - ".:/app"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+      - sidekiq
+    links:
+      - db
+      - sidekiq  
+volumes:
+  sidekiq:
+  redis:
+  db:
