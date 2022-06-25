@@ -23,8 +23,8 @@ class PostsController < ApplicationController
     tag_params[:tags].each do |tag|
       @post.tags.build({name: tag})
     end
-
     if @post.save
+      DeletePostJob.perform_at(1.minutes.from_now, @post.id)
       render json: @post, status: :created, location: @post
     else
       render json: @post.errors, status: :unprocessable_entity
@@ -49,6 +49,8 @@ class PostsController < ApplicationController
     if !@current_user.posts.exists?(@post.id)
       render json: {error: "This Post Not Belongs To This User"}, status: :unprocessable_entity
     else
+      @post.comments.destroy_all
+      @post.tags.destroy_all
       @post.destroy
     end
   end
